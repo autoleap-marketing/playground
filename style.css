@@ -14,6 +14,9 @@
   --danger: #ff6b6b;
   --danger-hover: #e05555;
   --done-bg: #f9fafb;
+  --col-pending: #fff7ed;
+  --col-inprogress: #eff6ff;
+  --col-completed: #f0fdf4;
 }
 
 /* ---- Reset & Base ---- */
@@ -42,6 +45,12 @@ body {
   width: 100%;
   max-width: 480px;
   padding: 32px;
+  transition: max-width 0.3s ease;
+}
+
+/* Wider card when kanban board is active */
+.app.kanban-mode {
+  max-width: 960px;
 }
 
 /* ---- Header ---- */
@@ -49,9 +58,57 @@ h1 {
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--primary);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   text-align: center;
 }
+
+/* ============================================================
+   TAB BAR
+   ============================================================ */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 8px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px; /* overlap the tab-bar border */
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  border-radius: 4px 4px 0 0;
+}
+
+.tab-btn:hover {
+  color: var(--primary);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* ---- View toggle ---- */
+.tab-view {
+  display: block;
+}
+
+.tab-view.hidden {
+  display: none;
+}
+
+/* ============================================================
+   TODO LIST VIEW
+   ============================================================ */
 
 /* ---- Input Row ---- */
 .input-row {
@@ -156,7 +213,7 @@ ul {
   border-color: var(--primary);
 }
 
-/* Todo text */
+/* Todo text — clicking opens modal */
 .todo-text {
   flex: 1;
   font-size: 0.95rem;
@@ -165,9 +222,20 @@ ul {
   word-break: break-word;
 }
 
+.todo-text:hover {
+  color: var(--primary);
+}
+
 .todo-item.done .todo-text {
   color: var(--done-text);
   text-decoration: line-through;
+}
+
+/* Subtask progress badge on list items */
+.todo-subtask-meta {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  white-space: nowrap;
 }
 
 /* Delete button */
@@ -195,4 +263,352 @@ ul {
   color: var(--text-light);
   font-size: 0.9rem;
   padding: 32px 0;
+}
+
+/* ============================================================
+   KANBAN BOARD
+   ============================================================ */
+.kanban-board {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.kanban-col {
+  flex: 1;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 0; /* allow shrinking */
+}
+
+.kanban-col:nth-child(1) { background: var(--col-pending); }
+.kanban-col:nth-child(2) { background: var(--col-inprogress); }
+.kanban-col:nth-child(3) { background: var(--col-completed); }
+
+.kanban-col-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Colored dot next to column title */
+.kanban-col-title::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.kanban-col:nth-child(1) .kanban-col-title::before { background: #f97316; }
+.kanban-col:nth-child(2) .kanban-col-title::before { background: #3b82f6; }
+.kanban-col:nth-child(3) .kanban-col-title::before { background: #22c55e; }
+
+.kanban-cards {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kanban-empty {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.8rem;
+  padding: 16px 0;
+}
+
+/* ---- Kanban Card ---- */
+.kanban-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+
+.kanban-card:hover {
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.kanban-card-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  margin-bottom: 8px;
+  word-break: break-word;
+  transition: color 0.15s;
+}
+
+.kanban-card-title:hover {
+  color: var(--primary);
+}
+
+.kanban-card-title.done-title {
+  text-decoration: line-through;
+  color: var(--done-text);
+}
+
+.kanban-card-meta {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+/* Status selector on kanban cards */
+.status-select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--card);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.status-select:focus {
+  border-color: var(--primary);
+}
+
+/* ============================================================
+   DETAIL MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 28px;
+  width: min(520px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  font-size: 1rem;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--done-bg);
+  color: var(--text);
+}
+
+/* Editable title */
+.modal-title-input {
+  width: 100%;
+  font-size: 1.15rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  border: none;
+  border-bottom: 2px solid var(--border);
+  padding: 4px 0 10px;
+  margin-bottom: 20px;
+  margin-right: 32px; /* avoid overlap with close btn */
+  outline: none;
+  transition: border-color 0.2s;
+  background: transparent;
+}
+
+.modal-title-input:focus {
+  border-bottom-color: var(--primary);
+}
+
+/* Section labels */
+.modal-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+/* Details textarea */
+.modal-details {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 24px;
+}
+
+.modal-details:focus {
+  border-color: var(--primary);
+}
+
+/* Subtasks section */
+.subtasks-section {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.subtasks-section .modal-label {
+  margin-bottom: 12px;
+}
+
+/* Subtask list */
+#modal-subtasks {
+  margin-bottom: 12px;
+}
+
+.subtask-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--done-bg);
+}
+
+.subtask-item:last-child {
+  border-bottom: none;
+}
+
+/* Custom checkbox for subtasks */
+.subtask-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: white;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.subtask-item.done .subtask-check {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.subtask-check:hover {
+  border-color: var(--primary);
+}
+
+.subtask-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+  word-break: break-word;
+}
+
+.subtask-item.done .subtask-text {
+  color: var(--done-text);
+  text-decoration: line-through;
+}
+
+.subtask-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.subtask-delete-btn:hover {
+  color: var(--danger);
+  background: #fff0f0;
+}
+
+/* Subtask add row */
+.subtask-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.subtask-input-row input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.subtask-input-row input:focus {
+  border-color: var(--primary);
+}
+
+.subtask-input-row input::placeholder {
+  color: var(--text-light);
+}
+
+.subtask-input-row button {
+  padding: 9px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.subtask-input-row button:hover {
+  background: var(--primary-hover);
 }
