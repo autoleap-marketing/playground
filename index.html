@@ -4,36 +4,113 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Todo App</title>
-    <!-- Link to our CSS file for styling -->
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <!-- Main app container -->
-    <div class="app">
+    <div class="app" id="app">
       <h1>My Todo List</h1>
 
-      <!-- Input area: text field + Add button -->
-      <div class="input-row">
-        <input
-          type="text"
-          id="todo-input"
-          placeholder="What needs to be done?"
-          autocomplete="off"
-        />
-        <button id="add-btn">Add</button>
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="list">Todo List</button>
+        <button class="tab-btn" data-tab="kanban">Kanban Board</button>
       </div>
 
-      <!-- Status line: shows "X of Y remaining" -->
-      <p class="status" id="status"></p>
+      <!-- ===== TODO LIST VIEW ===== -->
+      <div id="view-list" class="tab-view">
 
-      <!-- The list of todos (filled in by JavaScript) -->
-      <ul id="todo-list"></ul>
+        <!-- Input area -->
+        <div class="input-row">
+          <input
+            type="text"
+            id="todo-input"
+            placeholder="What needs to be done?"
+            autocomplete="off"
+          />
+          <button id="add-btn">Add</button>
+        </div>
 
-      <!-- Empty state: shown when there are no todos -->
-      <p class="empty-msg" id="empty-msg">No todos yet — add one above!</p>
+        <!-- Status line -->
+        <p class="status" id="status"></p>
+
+        <!-- Todo list -->
+        <ul id="todo-list"></ul>
+
+        <!-- Empty state -->
+        <p class="empty-msg" id="empty-msg">No todos yet — add one above!</p>
+      </div>
+
+      <!-- ===== KANBAN BOARD VIEW ===== -->
+      <div id="view-kanban" class="tab-view hidden">
+        <div class="kanban-board">
+
+          <div class="kanban-col">
+            <h2 class="kanban-col-title">Pending</h2>
+            <div class="kanban-cards" id="cards-pending">
+              <p class="kanban-empty">Nothing here yet</p>
+            </div>
+          </div>
+
+          <div class="kanban-col">
+            <h2 class="kanban-col-title">In Progress</h2>
+            <div class="kanban-cards" id="cards-inprogress">
+              <p class="kanban-empty">Nothing here yet</p>
+            </div>
+          </div>
+
+          <div class="kanban-col">
+            <h2 class="kanban-col-title">Completed</h2>
+            <div class="kanban-cards" id="cards-completed">
+              <p class="kanban-empty">Nothing here yet</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 
-    <!-- Link to our JavaScript file for behavior -->
+    <!-- ===== DETAIL MODAL ===== -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div class="modal" id="modal">
+
+        <!-- Close button -->
+        <button id="modal-close" class="modal-close" title="Close">✕</button>
+
+        <!-- Editable title -->
+        <input
+          id="modal-title"
+          class="modal-title-input"
+          type="text"
+          placeholder="Todo title"
+        />
+
+        <!-- Details / notes -->
+        <label class="modal-label">Details</label>
+        <textarea
+          id="modal-details"
+          class="modal-details"
+          placeholder="Add notes or details..."
+        ></textarea>
+
+        <!-- Subtasks -->
+        <div class="subtasks-section">
+          <h3 class="modal-label">Subtasks</h3>
+          <ul id="modal-subtasks"></ul>
+          <div class="subtask-input-row">
+            <input
+              id="subtask-input"
+              type="text"
+              placeholder="Add a subtask..."
+              autocomplete="off"
+            />
+            <button id="subtask-add-btn">Add</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
