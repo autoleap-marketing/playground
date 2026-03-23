@@ -134,12 +134,57 @@ function renderKanban() {
   fillColumn(pendingEl,    columns['pending']);
   fillColumn(inProgressEl, columns['in-progress']);
   fillColumn(completedEl,  columns['completed']);
+
+  // ---- Drop zone listeners ----
+  var dropZones = [
+    { el: pendingEl,    status: 'pending'     },
+    { el: inProgressEl, status: 'in-progress' },
+    { el: completedEl,  status: 'completed'   }
+  ];
+
+  dropZones.forEach(function(zone) {
+    zone.el.addEventListener('dragover', function(e) {
+      e.preventDefault(); // required to allow dropping
+      e.dataTransfer.dropEffect = 'move';
+    });
+
+    zone.el.addEventListener('dragenter', function(e) {
+      e.preventDefault();
+      zone.el.classList.add('drag-over');
+    });
+
+    zone.el.addEventListener('dragleave', function(e) {
+      // Only remove highlight when leaving the column itself, not its children
+      if (!zone.el.contains(e.relatedTarget)) {
+        zone.el.classList.remove('drag-over');
+      }
+    });
+
+    zone.el.addEventListener('drop', function(e) {
+      e.preventDefault();
+      zone.el.classList.remove('drag-over');
+      var id = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      if (id) setTodoStatus(id, zone.status);
+    });
+  });
 }
 
 // Builds and returns a single kanban card DOM node
 function createKanbanCard(todo) {
   const card = document.createElement('div');
   card.className = 'kanban-card';
+
+  // ---- Drag and Drop ----
+  card.draggable = true;
+  card.addEventListener('dragstart', function(e) {
+    e.dataTransfer.setData('text/plain', String(todo.id));
+    e.dataTransfer.effectAllowed = 'move';
+    // slight delay so the card renders before going semi-transparent
+    setTimeout(function() { card.classList.add('dragging'); }, 0);
+  });
+  card.addEventListener('dragend', function() {
+    card.classList.remove('dragging');
+  });
 
   // Card title — click opens modal
   const title = document.createElement('div');

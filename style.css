@@ -324,6 +324,14 @@ ul {
   padding: 16px 0;
 }
 
+/* ---- Drop zone highlight ---- */
+.kanban-cards.drag-over {
+  outline: 2px dashed var(--primary);
+  outline-offset: -4px;
+  border-radius: 8px;
+  background: rgba(108, 99, 255, 0.05);
+}
+
 /* ---- Kanban Card ---- */
 .kanban-card {
   background: var(--card);
@@ -336,6 +344,15 @@ ul {
 
 .kanban-card:hover {
   box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.kanban-card[draggable] {
+  cursor: grab;
+}
+
+.kanban-card.dragging {
+  opacity: 0.45;
+  cursor: grabbing;
 }
 
 .kanban-card-title {
