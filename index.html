@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Todo App</title>
+    <!-- Link to our CSS file for styling -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Main app container -->
+    <div class="app">
+      <h1>My Todo List</h1>
+
+      <!-- Input area: text field + Add button -->
+      <div class="input-row">
+        <input
+          type="text"
+          id="todo-input"
+          placeholder="What needs to be done?"
+          autocomplete="off"
+        />
+        <button id="add-btn">Add</button>
+      </div>
+
+      <!-- Status line: shows "X of Y remaining" -->
+      <p class="status" id="status"></p>
+
+      <!-- The list of todos (filled in by JavaScript) -->
+      <ul id="todo-list"></ul>
+
+      <!-- Empty state: shown when there are no todos -->
+      <p class="empty-msg" id="empty-msg">No todos yet — add one above!</p>
+    </div>
+
+    <!-- Link to our JavaScript file for behavior -->
+    <script src="script.js"></script>
+  </body>
+</html>
